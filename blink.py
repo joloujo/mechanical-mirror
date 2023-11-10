@@ -15,9 +15,9 @@ def blink():
     try:
         while True:
             GPIO.output(led_pin, GPIO.HIGH) # Turn LED on
-            time.sleep(0.75)                   # Delay for 3/4 second
+            time.sleep(0.1)
             GPIO.output(led_pin, GPIO.LOW)  # Turn LED off
-            time.sleep(0.25)                   # Delay for 1/4 seconds
+            time.sleep(0.4)
 
     # When you press ctrl+c, nicely release GPIO resources
     finally:
