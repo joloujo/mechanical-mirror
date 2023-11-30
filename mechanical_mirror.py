@@ -12,6 +12,12 @@ m (number, length = HEIGHT): set servo motors
 import serial
 import time
 
+from PIL import Image
+import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import cv2 as cv
+
 HEIGHT = 2
 
 # set up the serial port
