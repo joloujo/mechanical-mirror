@@ -125,6 +125,8 @@ class arduinoInterface:
             self.updateState(states)
             return
         
+        # TODO: Update state while the mirror is moving
+
         # reset the servos and go to the first column
         self.send("m00000")
         self.send('g0')

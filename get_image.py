@@ -80,6 +80,8 @@ class imageGetter():
             picture = np.asarray(self.cam.capture_image(), dtype=np.uint8)
 
         # TODO: Make the images the right color when you do the arduino stuff
+        # TODO: Countdown
+        # TODO: Use the button on the Arduino
 
         cv.imshow('background', background)
         cv.imshow('picture', picture)
