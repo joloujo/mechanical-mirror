@@ -1,53 +1,60 @@
-'''
-Command list:
-g (number of any length): go to step
-h : set home
-s (number of any length): step 
-m (number, length = HEIGHT): set servo motors
-'''
-
-# Example command 1: m09 g5000 m00 g10000 m99 g5000 m00 g0
-# Example command 2: g2000 m00 g0 m09 g5000 m00 g10000 m99 g5000 m00 g0
-
-import serial
+from get_image import imageGetter
+from image_converter import imageConverter
+from arduino_interface import arduinoInterface
 import time
+import os
 
-from PIL import Image
-import numpy as np
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
-import cv2 as cv
+WIDTH = 15
+HEIGHT = 15
+SIM_ARDUINO = True # Set to true to use the simulator
 
-HEIGHT = 2
+print("creating image getter")
+image_getter = imageGetter()
 
-# set up the serial port
-PORT = 'COM4'
-BAUDRATE = 115200
-serialPort = serial.Serial(PORT, BAUDRATE, timeout=60)
-serialPort.flush()
+print("creating image converter")
+image_converter = imageConverter(WIDTH, HEIGHT)
 
+# Pick the port based on the OS
+port = ''
+if SIM_ARDUINO:
+    port = 'sim'
+elif os.name == 'nt':
+    port = 'COM5'
+else: # assume it's the raspberry pi
+    port = '/dev/ttyACM0'
 
-def send(data: str):
-    print("sending:", data)
-
-    serialPort.write(bytes(data + "\n", 'utf-8'))
-    response = serialPort.readline().decode().rstrip()
-
-    if response != "":
-        raise ValueError(response)
-
+print("creating arduino interface")
+arduino_interface = arduinoInterface(port, WIDTH, HEIGHT)
 
 # We need to wait for a bit before continuing or the readline will return nothing
+print("waiting for serial port")
 time.sleep(2)
 while True:
-    commands = input("Enter a commands separated by spaces: ")
-    if commands == "":
+    # Get the images from the camera
+    background, picture, break_loop = image_getter.get_images()
+
+    # If the user typed anything when asked to take a picture, break the loop
+    if break_loop:
         break
 
-    for command in commands.split(" "):
-        try:
-            send(command)
-        except ValueError as e:
-            print("Error:", e)
+    # Find what state each pixel should be in
+    states = image_converter.convert(background, picture)
 
-serialPort.close()
+    # Display the states on the mechanical mirror
+    arduino_interface.display(states)
+
+# Close the serial port
+arduino_interface.close()
+
+'''
+Code structure:
+    Setup:
+        - Set up serial port
+        - Set up camera
+        - Home the VSA on the mirror
+    Loop:
+        - Wait for button press
+        - Get image from camera based on os
+        - Image processing
+        - Send commands to arduino
+'''
