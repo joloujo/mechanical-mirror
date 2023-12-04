@@ -95,7 +95,10 @@ class arduinoInterface:
             return
 
         self.serialPort.write(bytes(data + "\n", 'utf-8'))
-        response = self.serialPort.readline().decode().rstrip()
+
+        response = "ping"
+        while response == "ping":
+            response = self.serialPort.readline().decode().rstrip()
 
         if response != "":
             warnings.warn(response)

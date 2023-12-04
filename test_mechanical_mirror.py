@@ -11,7 +11,7 @@ port = ''
 if SIM_ARDUINO:
     port = 'sim'
 elif os.name == 'nt':
-    port = 'COM5'
+    port = 'COM4'
 else: # assume it's the raspberry pi
     port = '/dev/ttyACM0'
 

@@ -4,15 +4,9 @@ from arduino_interface import arduinoInterface
 import time
 import os
 
-WIDTH = 15
-HEIGHT = 15
+WIDTH = 5
+HEIGHT = 5
 SIM_ARDUINO = True # Set to true to use the simulator
-
-print("creating image getter")
-image_getter = imageGetter()
-
-print("creating image converter")
-image_converter = imageConverter(WIDTH, HEIGHT)
 
 # Pick the port based on the OS
 port = ''
@@ -25,6 +19,12 @@ else: # assume it's the raspberry pi
 
 print("creating arduino interface")
 arduino_interface = arduinoInterface(port, WIDTH, HEIGHT)
+
+print("creating image getter")
+image_getter = imageGetter(arduino_interface)
+
+print("creating image converter")
+image_converter = imageConverter(WIDTH, HEIGHT)
 
 # We need to wait for a bit before continuing or the readline will return nothing
 print("waiting for serial port")

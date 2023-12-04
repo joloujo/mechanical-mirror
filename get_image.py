@@ -1,3 +1,4 @@
+from arduino_interface import arduinoInterface
 import os
 import numpy as np
 import cv2 as cv
@@ -10,16 +11,19 @@ else : # assume it's the raspberry pi
     from picamera2 import Picamera2, Preview 
 
 class imageGetter():
-    def __init__(self):
+    def __init__(self, arduino_interface: arduinoInterface):
         """
         Initializes the image getter
+
+        Args:
+            arduino_interface (arduinoInterface): The interface to the arduino
         """
 
-        # Save the OS
-        self.os = os.name
+        # Save the arduino interface
+        self.arduino_interface = arduino_interface
 
         # Set up the camera based on the OS
-        if self.os == 'nt':
+        if os.name == 'nt':
             self.cam = cv.VideoCapture(0)
         else: # assume it's the raspberry pi
             self.cam = Picamera2()
@@ -33,6 +37,20 @@ class imageGetter():
         Initializes the image getter
         """
 
+    def get_image(self) -> np.ndarray[np.uint8, np.dtype[np.uint8]]:
+        """
+        Gets an image from the camera based on the OS
+
+        Returns:
+            np.ndarray: The image from the camera
+        """
+
+        self.arduino_interface.send("b") # wait for button press
+        if os.name == 'nt':
+            return np.asarray(self.cam.read()[1], dtype=np.uint8)
+        else: # assume it's the raspberry pi
+            return np.asarray(self.cam.capture_image(), dtype=np.uint8)
+
     def get_images(self) -> tuple[np.ndarray[np.uint8, np.dtype[np.uint8]], np.ndarray[np.uint8, np.dtype[np.uint8]], bool]:
         """
         Gets two images from the camera (one of the background and one of the subject) based on the OS
@@ -43,45 +61,11 @@ class imageGetter():
         """
 
         # set up the return values
-        background: np.ndarray[np.uint8, np.dtype[np.uint8]] = np.array([])
-        picture: np.ndarray[np.uint8, np.dtype[np.uint8]] = np.array([])
-
-        # Get the images from the camera based on the OS
-        if self.os == 'nt':
-
-            # If the OS is windows, use the keyboard for user input and OpenCV for the camera
-
-            # get background image
-            user_input = input("Press enter to take a picture of the background:")
-            if user_input != "":
-                return background, picture, True
-            background = np.asarray(self.cam.read()[1], dtype=np.uint8)
-
-            # get picture image
-            user_input = input("Press enter to take a picture of the subject:")
-            if user_input != "":
-                return background, picture, True
-            picture = np.asarray(self.cam.read()[1], dtype=np.uint8)
-
-        else: # assume it's the raspberry pi
-            
-            # Use the keyboard for user input and PyCam2 for the camera
-
-            # get background image
-            user_input = input("Press enter to take a picture of the background:")
-            if user_input != "":
-                return background, picture, True
-            background = np.asarray(self.cam.capture_image(), dtype=np.uint8)
-
-            # get picture image
-            user_input = input("Press enter to take a picture of the subject:")
-            if user_input != "":
-                return background, picture, True
-            picture = np.asarray(self.cam.capture_image(), dtype=np.uint8)
+        background = self.get_image()
+        picture = self.get_image()
 
         # TODO: Make the images the right color when you do the arduino stuff
         # TODO: Countdown
-        # TODO: Use the button on the Arduino
 
         cv.imshow('background', background)
         cv.imshow('picture', picture)
