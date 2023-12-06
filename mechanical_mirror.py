@@ -47,7 +47,8 @@ def mechancial_mirror():
     # Close the serial port
     arduino_interface.close()
 
-mechancial_mirror()
+if __name__ == "__main__":
+    mechancial_mirror()
 
 '''
 Code structure:

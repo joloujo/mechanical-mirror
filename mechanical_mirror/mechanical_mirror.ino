@@ -40,6 +40,7 @@ void setup() {
   pinMode(ls_pin, INPUT_PULLUP);
   pinMode(shutter_pin, INPUT_PULLUP);
   pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 String step(int n) {
