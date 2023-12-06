@@ -2,6 +2,7 @@ import serial
 import warnings
 import numpy as np
 import os.path
+import time
 
 '''
 Command list:
@@ -92,6 +93,8 @@ class arduinoInterface:
         # if the serial port is simulated, print the command instead of sending it
         if self.serialPort is None:
             print("sending:", data)
+            if data == "b":
+                input("Press enter to simulate arduino button press")
             return
 
         self.serialPort.write(bytes(data + "\n", 'utf-8'))
@@ -128,7 +131,7 @@ class arduinoInterface:
             self.updateState(states)
             return
         
-        # TODO: Update state while the mirror is moving
+        # TODO: Test update state while the mirror is moving
 
         # reset the servos and go to the first column
         self.send("m00000")
@@ -142,6 +145,9 @@ class arduinoInterface:
             # turn the servos that need to be turned
             pixels = ''.join([str(row[col] * 9) for row in flip])
             self.send(f'm{pixels}')
+            new_state = self.current_state.copy()
+            new_state[:, col] = states[:, col]
+            self.updateState(new_state)
 
             # keep going it's not the last column
             if col != self.WIDTH - 1:

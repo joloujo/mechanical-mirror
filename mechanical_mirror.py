@@ -6,45 +6,48 @@ import os
 
 WIDTH = 5
 HEIGHT = 5
-SIM_ARDUINO = True # Set to true to use the simulator
+SIM_ARDUINO = False # Set to true to use the simulator
 
-# Pick the port based on the OS
-port = ''
-if SIM_ARDUINO:
-    port = 'sim'
-elif os.name == 'nt':
-    port = 'COM5'
-else: # assume it's the raspberry pi
-    port = '/dev/ttyACM0'
+def mechancial_mirror():
+    # Pick the port based on the OS
+    port = ''
+    if SIM_ARDUINO:
+        port = 'sim'
+    elif os.name == 'nt':
+        port = 'COM5'
+    else: # assume it's the raspberry pi
+        port = '/dev/ttyACM0'
 
-print("creating arduino interface")
-arduino_interface = arduinoInterface(port, WIDTH, HEIGHT)
+    print("creating arduino interface")
+    arduino_interface = arduinoInterface(port, WIDTH, HEIGHT)
 
-print("creating image getter")
-image_getter = imageGetter(arduino_interface)
+    print("creating image getter")
+    image_getter = imageGetter(arduino_interface)
 
-print("creating image converter")
-image_converter = imageConverter(WIDTH, HEIGHT)
+    print("creating image converter")
+    image_converter = imageConverter(WIDTH, HEIGHT)
 
-# We need to wait for a bit before continuing or the readline will return nothing
-print("waiting for serial port")
-time.sleep(2)
-while True:
-    # Get the images from the camera
-    background, picture, break_loop = image_getter.get_images()
+    # We need to wait for a bit before continuing or the readline will return nothing
+    print("waiting for serial port")
+    time.sleep(2)
+    while True:
+        # Get the images from the camera
+        background, picture, break_loop = image_getter.get_images()
 
-    # If the user typed anything when asked to take a picture, break the loop
-    if break_loop:
-        break
+        # If the user typed anything when asked to take a picture, break the loop
+        if break_loop:
+            break
 
-    # Find what state each pixel should be in
-    states = image_converter.convert(background, picture)
+        # Find what state each pixel should be in
+        states = image_converter.convert(background, picture)
 
-    # Display the states on the mechanical mirror
-    arduino_interface.display(states)
+        # Display the states on the mechanical mirror
+        arduino_interface.display(states)
 
-# Close the serial port
-arduino_interface.close()
+    # Close the serial port
+    arduino_interface.close()
+
+mechancial_mirror()
 
 '''
 Code structure:

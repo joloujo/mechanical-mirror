@@ -39,6 +39,7 @@ void setup() {
   pinMode(dir_pin, OUTPUT);
   pinMode(ls_pin, INPUT_PULLUP);
   pinMode(shutter_pin, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 String step(int n) {
@@ -118,6 +119,9 @@ String setServos(String states) {
 // }
 
 String wait4Press() {
+
+  digitalWrite(LED_BUILTIN, HIGH);
+
   int i = 0;
   while (digitalRead(shutter_pin) == 1) {
     if (i >= 1000) {
@@ -127,6 +131,8 @@ String wait4Press() {
     i += 1;
     delay(1);
   }
+
+  digitalWrite(LED_BUILTIN, LOW);
 
   return "";
 }
