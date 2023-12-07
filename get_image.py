@@ -67,6 +67,4 @@ class imageGetter():
         # TODO: Make the images the right color when you do the arduino stuff
         # TODO: Countdown
 
-        cv.imshow('background', background)
-        cv.imshow('picture', picture)
         return background, picture, False

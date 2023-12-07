@@ -23,5 +23,7 @@ arduino_interface.close()
 # image_getter = imageGetter(arduino_interface)
 
 # background, picture, _ = image_getter.get_images()
+cv.imshow('background', background)
+cv.imshow('picture', picture)
 # cv.waitKey(30000)
 
