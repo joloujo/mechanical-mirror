@@ -27,6 +27,9 @@ class arduinoInterface:
         # Save the width and height
         self.WIDTH = width
         self.HEIGHT = height
+        
+        # Get the absolute file path
+        file_path = os.path.abspath("current_state.npy")
 
         # load the current state
         self.current_state = np.zeros((self.HEIGHT, self.WIDTH), dtype=np.bool_)

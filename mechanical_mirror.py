@@ -18,6 +18,9 @@ def mechancial_mirror():
     else: # assume it's the raspberry pi
         port = '/dev/ttyACM0'
 
+    if not os.name == 'nt': # assume it's the raspberry pi
+        os.chdir("/home/mechmirror/GitHub/mechanical-mirror")
+
     print("creating arduino interface")
     arduino_interface = arduinoInterface(port, WIDTH, HEIGHT)
 

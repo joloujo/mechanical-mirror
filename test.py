@@ -4,10 +4,10 @@ from get_image import imageGetter
 import numpy as np
 import cv2 as cv
 
-WIDTH = 3
-HEIGHT = 3
+WIDTH = 5
+HEIGHT = 5
 
-arduino_interface = arduinoInterface('sim', WIDTH, HEIGHT)
+arduino_interface = arduinoInterface('/dev/ttyACM0', WIDTH, HEIGHT)
 '''
 states = np.asarray([
     [0, 1, 0],
@@ -20,8 +20,8 @@ arduino_interface.display(states)
 arduino_interface.close()
 '''
 
-image_getter = imageGetter(arduino_interface)
+# image_getter = imageGetter(arduino_interface)
 
-background, picture, _ = image_getter.get_images()
-cv.waitKey(30000)
+# background, picture, _ = image_getter.get_images()
+# cv.waitKey(30000)
 
