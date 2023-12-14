@@ -8,15 +8,13 @@ l: go to limit switch
 b: wait for button press, send pings
 */
 
-#include <Servo.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
-const int HEIGHT = 5;
-const int WIDTH = 5;
+const int HEIGHT = 15;
+const int WIDTH = 15;
 
 String data;
-
-Servo servos[HEIGHT];
-int pins[HEIGHT] = {11, 10, 9, 6, 5};
 
 int step_pin = 3;
 int dir_pin = 2;
@@ -24,23 +22,33 @@ int ls_pin = 4;
 int shutter_pin = 7;
 
 int current_step = 0;
-int first_col_step = 30;
-int steps_per_col = 1912;
+int first_col_step = 0;
+int steps_per_col = 675;
 
 int stepDelay = 2;
+
+Adafruit_PWMServoDriver servo_driver = Adafruit_PWMServoDriver(0x41);
+uint8_t servonum = 15;
+
+#define SERVOMIN 150 // This is the 'minimum' pulse length count (out of 4096)
+#define SERVOMAX 600 // This is the 'maximum' pulse length count (out of 4096)
 
 void setup() {
   Serial.begin(115200);
 
-  for (int i = 0; i < HEIGHT; i++) {
-    servos[i].attach(pins[i]);
-  }
+  servo_driver.begin();
+  servo_driver.setOscillatorFrequency(25000000);
+  servo_driver.setPWMFreq(50);  // Analog servos run at ~50 Hz updates
 
   pinMode(step_pin, OUTPUT);
   digitalWrite(step_pin, HIGH);
+
   pinMode(dir_pin, OUTPUT);
+
   pinMode(ls_pin, INPUT_PULLUP);
+
   pinMode(shutter_pin, INPUT_PULLUP);
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 }
@@ -81,7 +89,7 @@ String limitSwitch(int max) {
   for (int i = 0; i < max; i++) {
     ls_value = digitalRead(ls_pin);
     if (ls_value == 0) {
-      for (int j = 0; j < 200; j++) {
+      for (int j = 0; j < 50; j++) {
         step(1);
       }
       setHome();
@@ -93,33 +101,19 @@ String limitSwitch(int max) {
 }
 
 String setServos(String states) {
-  if (states.length() != HEIGHT) return "length of input does not match HEIGHT";
+  if (states.length() != servonum) return "length of input does not match number of servos";
 
-  for(int i = 0; i < HEIGHT; i++ ) {
-    String c = states.substring(i, i+1);
+  for(int servo = 0; servo < servonum; servo++ ) {
+    String c = states.substring(servo, servo+1);
     int value = c.toInt();
-    servos[i].write(value * 20);
+
+    uint16_t command_value = map(value, 0, 9, SERVOMIN, SERVOMAX);
+
+    servo_driver.setPWM(servo, 0, command_value);
   }
 
   return "";
 }
-
-// String combined(String command) {
-//   String response = "";
-
-//   if (data.length() != HEIGHT + 2) {
-//     response = "data must be " + String(2 + HEIGHT) + " (HEIGHT = " + String(HEIGHT) + ") characters long";
-//     return response;
-//   }
-
-//   String col_str = data.substring(0, 2);
-//   String row_str = data.substring(2);
-//   int col = col_str.toInt();
-
-//   goToCol(col);
-//   setServos(row_str);
-//   return response;
-// }
 
 String wait4Press() {
 

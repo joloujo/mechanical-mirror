@@ -2,8 +2,8 @@ from arduino_interface import arduinoInterface
 import time
 import os
 
-WIDTH = 5
-HEIGHT = 5
+WIDTH = 15
+HEIGHT = 15
 SIM_ARDUINO = False # Set to true to use the simulator
 
 # Pick the port based on the OS
@@ -24,30 +24,17 @@ arduino_interface = arduinoInterface(port, WIDTH, HEIGHT)
 # We need to wait for a bit before continuing or the readline will return nothing
 print("waiting for serial port")
 time.sleep(2)
-while True:
-    commands = input("Command to send: ")
-
-    if commands == "":
-        break
-
-    for command in commands.split():
-        if command[0] == "m":
-            if len(command) == 2:
-                command = "m" + command[1] * 30
-
-        # Display the states on the mechanical mirror
+# while True:
+for _ in range(1):
+    for i in range(30):
+        command = "m" + "1" * i + "0" * (30-i)
         arduino_interface.send(command)
+        time.sleep(0.25)
+
+    for i in range(30):
+        command = "m" + "0" * i + "1" * (30-i)
+        arduino_interface.send(command)
+        time.sleep(0.25)
 
 # Close the serial port
 arduino_interface.close()
-
-# theoretically 225 step increments
-# col 1, 9: step 0
-# col 3, 13: step 225
-# col 6, 11: 
-# col 2, 10: 
-# col 4, 14: 
-# col 7, 12:
-#
-# col 5, 15:
-# col 8: 
