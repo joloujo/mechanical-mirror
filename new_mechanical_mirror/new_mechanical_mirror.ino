@@ -12,7 +12,7 @@ b: wait for button press, send pings
 #include <Adafruit_PWMServoDriver.h>
 
 const int HEIGHT = 15;
-const int WIDTH = 15;
+const int WIDTH = 13;
 
 String data;
 
@@ -23,7 +23,7 @@ int shutter_pin = 7;
 
 int current_step = 0;
 int first_col_step = 0;
-int steps_per_col = 675;
+int steps_per_col = 663;
 
 int stepDelay = 2;
 
@@ -50,7 +50,7 @@ void setup() {
   pinMode(shutter_pin, INPUT_PULLUP);
 
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN, LOW);  
 }
 
 String step(int n) {
@@ -112,6 +112,8 @@ String setServos(String states) {
     servo_driver.setPWM(servo, 0, command_value);
   }
 
+  delay(500);
+
   return "";
 }
 
@@ -121,6 +123,14 @@ String wait4Press() {
 
   int i = 0;
   while (digitalRead(shutter_pin) == 1) {
+    if (i >= 1000) {
+      Serial.println("ping");
+      i = 0;
+    }
+    i += 1;
+    delay(1);
+  }
+  while (digitalRead(shutter_pin) == 0) {
     if (i >= 1000) {
       Serial.println("ping");
       i = 0;

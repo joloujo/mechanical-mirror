@@ -4,8 +4,8 @@ from arduino_interface import arduinoInterface
 import time
 import os
 
-WIDTH = 5
-HEIGHT = 5
+WIDTH = 13
+HEIGHT = 15
 SIM_ARDUINO = False # Set to true to use the simulator
 
 def mechancial_mirror():
@@ -14,7 +14,7 @@ def mechancial_mirror():
     if SIM_ARDUINO:
         port = 'sim'
     elif os.name == 'nt':
-        port = 'COM5'
+        port = 'COM4'
     else: # assume it's the raspberry pi
         port = '/dev/ttyACM0'
 
@@ -33,22 +33,23 @@ def mechancial_mirror():
     # We need to wait for a bit before continuing or the readline will return nothing
     print("waiting for serial port")
     time.sleep(2)
-    while True:
-        # Get the images from the camera
-        background, picture, break_loop = image_getter.get_images()
 
-        # If the user typed anything when asked to take a picture, break the loop
-        if break_loop:
-            break
+    arduino_interface.send("b") # wait for button press
+    arduino_interface.home()
 
-        # Find what state each pixel should be in
-        states = image_converter.convert(background, picture)
+    try:
+        while True:
+            # Get the images from the camera
+            background, picture = image_getter.get_images()
 
-        # Display the states on the mechanical mirror
-        arduino_interface.display(states)
+            # Find what state each pixel should be in
+            states = image_converter.convert(background, picture)
 
-    # Close the serial port
-    arduino_interface.close()
+            # Display the states on the mechanical mirror
+            arduino_interface.display(states)
+    except:
+        # Close the serial port
+        arduino_interface.close()
 
 if __name__ == "__main__":
     mechancial_mirror()

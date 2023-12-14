@@ -88,7 +88,7 @@ class imageConverter():
         image_to_resize = Image.fromarray(combined_image_diff.astype('uint8'))
 
         #downsample image
-        downsampled_image = image_to_resize.resize((self.HEIGHT, self.WIDTH))
+        downsampled_image = image_to_resize.resize((self.WIDTH, self.HEIGHT))
         downsampled_image_array = np.asarray(downsampled_image)
 
 

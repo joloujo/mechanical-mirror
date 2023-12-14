@@ -33,14 +33,15 @@ class arduinoInterface:
 
         # load the current state
         self.current_state = np.zeros((self.HEIGHT, self.WIDTH), dtype=np.bool_)
-        if os.path.isfile('current_state.npy'):
-            saved_state = np.load('current_state.npy')
-            if saved_state.shape == self.current_state.shape:
-                self.current_state = saved_state       
-            else:
-                self.updateState(self.current_state)         
-        else:
-            self.updateState(self.current_state)
+        # if os.path.isfile('current_state.npy'):
+        #     saved_state = np.load('current_state.npy')
+        #     if saved_state.shape == self.current_state.shape:
+        #         self.current_state = saved_state       
+        #     else:
+        #         self.updateState(self.current_state)         
+        # else:
+        #     self.updateState(self.current_state)
+        self.updateState(self.current_state)
 
         # set up the serial port
         if port == 'sim':
@@ -118,7 +119,7 @@ class arduinoInterface:
         """
 
         # find the difference between the current state and the desired state
-        flip = states != self.current_state
+        to_change = states != self.current_state
 
         # if the serial port is simulated, print the states instead of sending them
         if self.serialPort is None:
@@ -126,19 +127,19 @@ class arduinoInterface:
                 print(''.join([str(int(x)) for x in row]))
             print()
             for row in states:
-                print(''.join(["#" if x else " " for x in row]))
+                print(''.join(["##" if x else "  " for x in row]))
             print()
-            for row in flip:
-                print(''.join(["#" if x else " " for x in row]))
+            for row in to_change:
+                print(''.join(["##" if x else "  " for x in row]))
             print()
             self.updateState(states)
             return
         
-        # TODO: Test update state while the mirror is moving
-
         # reset the servos and go to the first column
-        self.send("m00000")
+        self.send(f"m{"0" * self.HEIGHT}")
         self.send('g0')
+
+        last_servo_positions = [0] * self.HEIGHT
 
         # send the states to the arduino
         for col in range(self.WIDTH):
@@ -146,21 +147,21 @@ class arduinoInterface:
             self.send(f'g{col}')
 
             # turn the servos that need to be turned
-            pixels = ''.join([str(row[col] * 9) for row in flip])
-            self.send(f'm{pixels}')
+
+            pixels_to_flip = [row[col] for row in to_change]
+            new_servo_positions = [0 if pixels_to_flip[i] == last_servo_positions[i] else 1 for i in range(self.HEIGHT)]
+            command = "".join([str(n*9) for n in new_servo_positions])
+
+            self.send(f'm{command}')
             new_state = self.current_state.copy()
             new_state[:, col] = states[:, col]
             self.updateState(new_state)
 
-            # keep going it's not the last column
-            if col != self.WIDTH - 1:
-                # go between the columns and reset the servos
-                self.send(f'g{col+0.5}')
-                self.send("m00000")
+            last_servo_positions = new_servo_positions
                 
-        # go between the columns and reset the servos
+        # reset the servos
         self.send(f"g{self.WIDTH-1.5}")
-        self.send("m00000")
+        self.send(f"m{"0" * self.HEIGHT}")
 
         # go to the first column
-        self.send("g0")
+        self.home()

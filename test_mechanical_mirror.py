@@ -2,8 +2,8 @@ from arduino_interface import arduinoInterface
 import time
 import os
 
-WIDTH = 5
-HEIGHT = 5
+WIDTH = 13
+HEIGHT = 15
 SIM_ARDUINO = False # Set to true to use the simulator
 
 # Pick the port based on the OS
@@ -33,7 +33,7 @@ while True:
     for command in commands.split():
         if command[0] == "m":
             if len(command) == 2:
-                command = "m" + command[1] * 30
+                command = "m" + command[1] * HEIGHT
 
         # Display the states on the mechanical mirror
         arduino_interface.send(command)

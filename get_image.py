@@ -51,7 +51,7 @@ class imageGetter():
         else: # assume it's the raspberry pi
             return np.asarray(self.cam.capture_image(), dtype=np.uint8)
 
-    def get_images(self) -> tuple[np.ndarray[np.uint8, np.dtype[np.uint8]], np.ndarray[np.uint8, np.dtype[np.uint8]], bool]:
+    def get_images(self) -> tuple[np.ndarray[np.uint8, np.dtype[np.uint8]], np.ndarray[np.uint8, np.dtype[np.uint8]]]:
         """
         Gets two images from the camera (one of the background and one of the subject) based on the OS
 
@@ -64,7 +64,4 @@ class imageGetter():
         background = self.get_image()
         picture = self.get_image()
 
-        # TODO: Make the images the right color when you do the arduino stuff
-        # TODO: Countdown
-
-        return background, picture, False
+        return background, picture
