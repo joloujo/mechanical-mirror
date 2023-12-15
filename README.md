@@ -2,6 +2,26 @@
 
 This is the code for the Mechanical Mirror project from Olin's 2023 Principles of Integrated Engineering class.
 
+## Code Structure Diagram
+
+```mermaid
+graph TD
+    A([startup.service])
+    B([main.py])
+    C([blink.py])
+    D([mechanical_mirror.py])
+    E([shutdown.py])
+    F([get_image.py])
+    G([arduino_interface.py])
+    H([image_converter.py])
+    I([new_mechanical_mirror.ino])
+
+    A -->|runs| B
+    B -->|runs| C & D & E
+    D <-->|imports| F & G & H
+    G <-->|serial| I
+```
+
 ## File descriptions
 
 `startup.service.text` is a `.txt` file of a systemd service that runs when the Raspberry Pi boots. It runs `main.py`.
@@ -18,7 +38,7 @@ This is the code for the Mechanical Mirror project from Olin's 2023 Principles o
 
 `image_converter.py` contains an `imageConverter` object that has functions that convert a background and subject image to data that can be displayed on the mechanical mirror.
 
-`arduino_interface` contains an `arduinoInterface` object that manages the serial connection with the Arduino microcontroller (or simulates the microcontroller). It has functions to send commands to the Arduino and logic for converting the data from an `imageConverter` object to commands to display the image on the mechanical mirror.
+`arduino_interface.py` contains an `arduinoInterface` object that manages the serial connection with the Arduino microcontroller (or simulates the microcontroller). It has functions to send commands to the Arduino and logic for converting the data from an `imageConverter` object to commands to display the image on the mechanical mirror.
 
 `new_mechanical_mirror/new_mechanical_mirror.ino` is the version of the Arduino code that runs on the 13x15 mechanical mirror. It has manages the serial connection and runs functions to control the actuators based on the commands it recieves. 
 
