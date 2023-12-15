@@ -61,7 +61,7 @@ class arduinoInterface:
         if not self.serialPort is None: 
             self.serialPort.close()
 
-    def updateState(self, states: np.ndarray[int, np.dtype[np.bool_]]):
+    def updateState(self, states):
         """
         Updates and saves the current state of the mechanical mirror
 
@@ -78,7 +78,7 @@ class arduinoInterface:
         """
 
         # set all servos to 0
-        self.send("m00000")
+        self.send(f"m{'0' * self.HEIGHT}")
 
         # home the VSA
         self.send("l10000")
@@ -110,7 +110,7 @@ class arduinoInterface:
         if response != "":
             warnings.warn(response)
 
-    def display(self, states: np.ndarray[int, np.dtype[np.bool_]]):
+    def display(self, states):
         """
         Displays the states on the mechanical mirror
 
@@ -136,7 +136,7 @@ class arduinoInterface:
             return
         
         # reset the servos and go to the first column
-        self.send(f"m{"0" * self.HEIGHT}")
+        self.send(f"m{'0' * self.HEIGHT}")
         self.send('g0')
 
         last_servo_positions = [0] * self.HEIGHT
@@ -161,7 +161,7 @@ class arduinoInterface:
                 
         # reset the servos
         self.send(f"g{self.WIDTH-1.5}")
-        self.send(f"m{"0" * self.HEIGHT}")
+        self.send(f"m{'0' * self.HEIGHT}")
 
         # go to the first column
         self.home()

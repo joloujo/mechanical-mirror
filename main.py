@@ -11,7 +11,10 @@ def main():
     """ Main entry point of the app """
     threading.Thread(target=blink).start()
     threading.Thread(target=shutdown_on_push).start()
-    threading.Thread(target=mechancial_mirror).start()
+    try:
+        threading.Thread(target=mechancial_mirror).start()
+    except e:
+        print(e)
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
