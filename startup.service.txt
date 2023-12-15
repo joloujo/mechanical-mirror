@@ -1,0 +1,12 @@
+[Unit]
+Description=Start the mechanical mirror code on startup
+# Wants=network-online.target
+
+[Service]
+User=mechmirror
+Type=oneshot
+# ExecStart=/usr/bin/git -C /home/mechmirror/GitHub/mechanical-mirror/ pull
+ExecStart=/usr/bin/python3 /home/mechmirror/GitHub/mechanical-mirror/main.py
+
+[Install]
+WantedBy=default.target
