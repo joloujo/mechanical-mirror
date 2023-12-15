@@ -13,7 +13,7 @@ def main():
     threading.Thread(target=shutdown_on_push).start()
     try:
         threading.Thread(target=mechancial_mirror).start()
-    except e:
+    except Exception as e:
         print(e)
 
 if __name__ == "__main__":
