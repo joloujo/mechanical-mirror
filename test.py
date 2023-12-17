@@ -7,9 +7,6 @@ import cv2 as cv
 WIDTH = 13
 HEIGHT = 15
 
-print("0" * HEIGHT)
-exit()
-
 arduino_interface = arduinoInterface('sim', WIDTH, HEIGHT)
 '''
 states = np.asarray([

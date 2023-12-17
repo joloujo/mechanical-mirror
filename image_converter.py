@@ -6,6 +6,8 @@ import warnings
 
 warnings.filterwarnings('ignore') # Ignore warnings
 
+DISPLAY_IMAGES = False
+
 class imageConverter():
     def __init__(self, width: int, height: int):
         """
@@ -69,6 +71,11 @@ class imageConverter():
         hsv1 = cv.cvtColor(background, cv.COLOR_BGR2HSV)
         hsv2 = cv.cvtColor(picture, cv.COLOR_BGR2HSV)
 
+        if DISPLAY_IMAGES:
+            cv.imshow("hsv1", background)
+            cv.imshow("hsv2", picture)
+            cv.waitKey(0)
+
         # Extract the hue channel
         hue1 = hsv1[:, :, 2]
         hue2 = hsv2[:, :, 2]
@@ -76,13 +83,24 @@ class imageConverter():
         #find difference
         hue_difference = cv.absdiff(hue1, hue2)
 
+        if DISPLAY_IMAGES:
+            cv.imshow("hue_difference", hue_difference)
+            cv.waitKey(0)
+
         #find difference in total in normal format
         difference = cv.absdiff(picture, background)
         difference_gray = cv.cvtColor(difference, 7)
 
+        if DISPLAY_IMAGES:
+            cv.imshow("difference_gray", difference_gray)
+            cv.waitKey(0)
 
         #combine diff
         combined_image_diff = cv.absdiff(hue_difference, difference_gray)*2 + hue_difference/2 + difference_gray/2
+
+        if DISPLAY_IMAGES:
+            cv.imshow("combined_image_diff", combined_image_diff)
+            cv.waitKey(0)
 
         #Prep image to resize
         image_to_resize = Image.fromarray(combined_image_diff.astype('uint8'))
@@ -91,7 +109,9 @@ class imageConverter():
         downsampled_image = image_to_resize.resize((self.WIDTH, self.HEIGHT))
         downsampled_image_array = np.asarray(downsampled_image)
 
-
+        if DISPLAY_IMAGES:
+            cv.imshow("downsampled_image_array", cv.resize(downsampled_image_array, (self.WIDTH*50, self.HEIGHT*50), interpolation=cv.INTER_NEAREST))
+            cv.waitKey(0)
 
         #Kmeans clustering separation
         flatten_array = downsampled_image_array.reshape(-1, 1)
@@ -120,5 +140,9 @@ class imageConverter():
 
         final_image[mask] = 1
         final_image[inverted_mask] = 0
+
+        if DISPLAY_IMAGES:
+            cv.imshow("final_image", cv.resize(final_image.astype('uint8')*255, (self.WIDTH*50, self.HEIGHT*50), interpolation=cv.INTER_NEAREST))
+            cv.waitKey(0)
 
         return final_image

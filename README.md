@@ -46,6 +46,8 @@ graph TD
 
 `requirements.txt` is a list of the required packages to run this project.
 
+`display_array.py` displays a single array defined at the start of the file. This was used to demonstrate the mirror displaying recognizable images.
+
 `test_mechanical_mirror.py`, `test_servos.py`, and `test.py` are files used to test components of the code and are not part of the main code web.
 
 `.gitignore` is the gitignore file. It makes sure that the state is not kept over multiple devices.
