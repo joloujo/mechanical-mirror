@@ -1,6 +1,6 @@
 # Mechanical Mirror
 
-This is the code for the Mechanical Mirror project from Olin's 2023 Principles of Integrated Engineering class.
+This is the code for the Mechanical Mirror project from Olin's 2023 Principles of Integrated Engineering class. The website for this project can be found [here](https://olincollege.github.io/pie-2023-03/mechanical-mirror/).
 
 ## Code Structure Diagram
 
